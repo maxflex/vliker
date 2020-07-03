@@ -1,0 +1,28 @@
+.text {
+  &_green {
+    color: $green;
+  }
+  &_red {
+    color: $red;
+  }
+
+  &_grey {
+    color: $grey;
+  }
+
+  &_grey-light {
+    color: $grey-light;
+  }
+
+  &_size-13 {
+    font-size: 13px;
+  }
+
+  &_size-14 {
+    font-size: 14px;
+  }
+
+  &_bold {
+    font-weight: bold;
+  }
+}
