@@ -3,6 +3,9 @@ import App from "./App.vue"
 import store from "./store"
 import router from "./router"
 import http from "@/plugins/http"
+require("@/plugins/filters")
+require("@/plugins/directives")
+// require("@/plugins/moment")
 import VuePageTransition from "vue-page-transition"
 import { upperFirst, camelCase } from "lodash"
 import Cookies from "js-cookie"

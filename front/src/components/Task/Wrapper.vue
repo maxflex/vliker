@@ -1,20 +1,24 @@
 <template>
   <div>
-    <div class='progress'>
-      <div v-if='currentTask.completed === 0' class='text-center' style='align-self: flex-end'>
+    <div class="progress">
+      <div
+        v-if="currentTask.completed === 0"
+        class="text-center"
+        style="align-self: flex-end"
+      >
         <span>нажмите, чтобы начать накрутку</span>
-        <div class='arrow-down-animated'>
-          <i class='material-icons'>arrow_downward</i>
+        <div class="arrow-down-animated">
+          <i class="material-icons">arrow_downward</i>
         </div>
       </div>
-      <div class='progress__label' v-else>
-        <i class='material-icons progress__label__icon text_red mr-1'>
+      <div class="progress__label" v-else>
+        <i class="material-icons progress__label__icon text_red mr-1">
           {{ TASK_TYPE_META[currentTask.type].icon }}
         </i>
-        <span class='progress__label__counter text_red mr-2'>
-          <v-number :value='currentTask.completed'></v-number>
+        <span class="progress__label__counter text_red mr-2">
+          <v-number :value="currentTask.completed"></v-number>
         </span>
-        <span class='progress__label__text'>накручено</span>
+        <span class="progress__label__text">накручено</span>
       </div>
     </div>
     <TaskItem />
@@ -22,10 +26,10 @@
 </template>
 
 <script>
-import TaskItem from './Item'
-import { TASK_TYPE_META } from './'
-import { mapState } from 'vuex'
-import { VNumber } from '@maxflex/v-number'
+import TaskItem from "./Item"
+import { TASK_TYPE_META } from "./"
+import { mapState } from "vuex"
+import { VNumber } from "@maxflex/v-number"
 
 export default {
   components: { TaskItem, VNumber },
@@ -35,15 +39,14 @@ export default {
       TASK_TYPE_META,
     }
   },
-  
+
   computed: {
-    ...mapState('task', ['currentTask'])
-  }
+    ...mapState("task", ["currentTask"]),
+  },
 }
 </script>
 
-<style lang='scss'>
-
+<style lang="scss">
 .progress {
   &__label {
     font-size: 18px;
@@ -56,7 +59,6 @@ export default {
       display: inherit;
     }
   }
-
 }
 
 .arrow-down-animated {
@@ -64,17 +66,5 @@ export default {
   font-size: 24px;
   margin: 10px 0 5px;
   animation: arrowDown 1s infinite;
-}
-
-@keyframes arrowDown {
-  0% {
-    top: 0px;
-  }
-  50% {
-    top: 10px;
-  }
-  100% {
-    top: 0px;
-  }
 }
 </style>

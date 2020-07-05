@@ -69,19 +69,21 @@ export default {
     // для каждого типа своё сообщение
     this.instructions = JSON.parse(localStorage.getItem("instructions")) || {}
 
-    window.addEventListener("focus", () => {
+    window.addEventListener("focus", this.onWindowFocus)
+  },
+
+  destroyed() {
+    window.removeEventListener("focus", this.onWindowFocus)
+  },
+
+  methods: {
+    onWindowFocus() {
       if (this.likeAnimationQueued) {
         this.currentTask.completed++
         this.likeAnimationQueued = false
       }
-    })
-  },
+    },
 
-  destroyed() {
-    window.removeEventListener("focus")
-  },
-
-  methods: {
     like() {
       if (this.noMoreTasks) {
         this.noMoreTasksMessage()
