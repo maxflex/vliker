@@ -30,10 +30,6 @@
       <span
         v-html="TASK_TYPE_META[currentTask.type].instruction.join('<br>')"
       ></span>
-      <span
-        class="ec"
-        :class="'ec-' + TASK_TYPE_META[currentTask.type].emoji"
-      ></span>
     </v-dialog>
   </div>
 </template>
