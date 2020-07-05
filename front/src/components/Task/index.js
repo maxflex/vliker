@@ -9,7 +9,6 @@ export const openTaskUrl = function(task) {
 export const TASK_TYPE_META = {
   [TASK_TYPE.like]: {
     icon: "favorite",
-    emoji: "sparkling-heart",
     label: "лайков", // вы накрутили 13 лайков
     instruction: [
       "Сейчас откроется страница,",
@@ -18,7 +17,6 @@ export const TASK_TYPE_META = {
   },
   [TASK_TYPE.subscribe]: {
     icon: "person",
-    emoji: "handshake",
     label: "подписчиков",
     instruction: [
       "Сейчас откроется страница,",
@@ -27,7 +25,6 @@ export const TASK_TYPE_META = {
   },
   [TASK_TYPE.comment]: {
     icon: "chat",
-    emoji: "blush",
     label: "комментариев",
     instruction: [
       "Сейчас откроется страница, оставьте",

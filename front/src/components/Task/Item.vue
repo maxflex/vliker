@@ -12,16 +12,19 @@
       </div>
     </div>
     <div class="report" v-if="targetTaskId !== null">
-      <span v-if="reported" class="text_green"
-        >Спасибо! Cтраница будет удалена</span
-      >
-      <a v-else class="grey-link" @click="report">
-        Страница была закрыта/недоступна
+      <div style="padding-top: 6px" v-if="reported" class="text_green">
+        Спасибо! Cтраница будет удалена
+      </div>
+      <a v-else class="grey-link flex-items justify-center" @click="report">
+        <i class="material-icons mr-2 vertical-fix" style="font-size: 20px">
+          flag
+        </i>
+        страница была недоступна
       </a>
     </div>
 
     <v-dialog
-      @onConfirm="
+      @confirm="
         firstTimeInstructionDialog = false
         like()
       "
@@ -183,6 +186,7 @@ export default {
 
 .report {
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
+  margin-top: 18px;
 }
 </style>

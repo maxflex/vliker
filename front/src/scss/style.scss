@@ -196,3 +196,12 @@ a {
 .btn-icon {
   cursor: pointer;
 }
+
+.justify-center {
+  justify-content: center;
+}
+
+.vertical-fix {
+  top: -1px;
+  position: relative;
+}
