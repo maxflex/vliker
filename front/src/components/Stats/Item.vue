@@ -5,22 +5,27 @@
         {{ TASK_TYPE_META[item.type].icon }}
       </i>
       <div>
-        <span class="text_medium">{{ item.completed }}</span>
+        <span class="text_medium">{{ item.actions_from_count }}</span>
         {{ TASK_TYPE_META[item.type].label }}
       </div>
-      <span class="ml-2 text_size-13">
-        <span class="text_grey-light" v-if="isInQueue">в очереди</span>
+      <span class="ml-3">
+        <v-chip color="red" v-if="item.is_banned" @click="showBanInfo()">
+          бан
+        </v-chip>
+        <v-chip @click="checkQueue()" color="grey" v-else-if="isInQueue">
+          в очереди
+        </v-chip>
         <span class="text_grey-light" v-else-if="isInProgress">
-          {{ item.received }} накручено
+          {{ item.actions_to_count }} накручено
         </span>
-        <span v-else class="text_green">выполнено</span>
+        <v-chip v-else color="green">выполнено</v-chip>
       </span>
       <spacer></spacer>
       <v-menu>
-        <div v-if="isInQueue" @click="checkQueue">
+        <div v-if="isInQueue" @click="checkQueue()">
           Какой я в очереди?
         </div>
-        <div @click="start(item)">
+        <div @click="startAgain()">
           Продолжить накрутку
         </div>
         <div @click="openTaskUrl(item)">
@@ -43,7 +48,6 @@
 <script>
 import { TASK_TYPE_META, openTaskUrl } from "@/components/Task"
 import VMenu from "@/components/UI/VMenu"
-import { mapActions } from "vuex"
 
 export default {
   props: {
@@ -63,27 +67,43 @@ export default {
   methods: {
     openTaskUrl,
 
-    ...mapActions("task", ["start"]),
+    startAgain() {
+      if (this.item.is_banned) {
+        this.showBanInfo()
+      }
+      this.$store.dispatch("task/start", this.item)
+    },
 
     checkQueue() {
       this.$store.dispatch("task/checkQueue", this.item).then(r => {
-        this.$store.dispatch("message/set", `Вы ${r.data}й в очереди`)
+        this.$showMessage(
+          `Вы <span class="text_red">${r.data}й</span> в очереди`,
+        )
       })
+    },
+
+    showBanInfo() {
+      this.$showMessage([
+        "Страница заблокирована из-за жалоб",
+        "Она точно доступна и открыта для всех?",
+      ])
     },
   },
 
   computed: {
     percentage() {
-      return (this.item.received / this.item.completed) * 100
+      return (this.item.actions_to_count / this.item.actions_from_count) * 100
     },
 
     isInProgress() {
-      return this.percentage > 0 && this.percentage < 100
+      return (
+        !this.item.is_banned && this.percentage > 0 && this.percentage < 100
+      )
     },
 
     // задача в очереди
     isInQueue() {
-      return this.item.received === 0
+      return !this.item.is_banned && this.item.actions_to_count === 0
     },
   },
 }

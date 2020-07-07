@@ -39,12 +39,12 @@ export default {
   },
 
   // beforeRouteEnter(to, from, next) {
-  //   $('#vk_community_messages').show()
+  //   $("#vk_community_messages").show()
   //   next()
   // },
 
   // beforeRouteLeave(to, from, next) {
-  //   $('#vk_community_messages').hide()
+  //   $("#vk_community_messages").hide()
   //   next()
   // },
 

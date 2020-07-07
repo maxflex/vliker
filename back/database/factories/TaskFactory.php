@@ -1,9 +1,8 @@
 <?php
 
 use App\Enums\TaskType;
-use App\Models\{Task\Task, Task\CompletedTask, User};
+use App\Models\Task;
 use Faker\Generator as Faker;
-use App\Utils\Url;
 
 $factory->define(Task::class, function (Faker $faker) {
     $urls = collect([
@@ -23,7 +22,7 @@ $factory->define(Task::class, function (Faker $faker) {
     ]);
 
     return [
-        'url' => Url::shorten($urls->random()),
+        'url' => $urls->random(),
         // 'type' => $taskTypes->random(),
         'type' => TaskType::Like,
     ];

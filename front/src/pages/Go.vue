@@ -5,7 +5,7 @@
     </div>
     <TaskWrapper />
     <div class="controls">
-      <v-button class="flex-items" @click.native="stop">
+      <v-button class="flex-items" @click.native="stop()">
         <i class="material-icons mr-2">stop</i>
         <span>завершить накрутку</span>
       </v-button>
@@ -31,6 +31,12 @@ export default {
     if (store.state.task.currentTask === null) {
       return next("/")
     }
+    document.getElementById("vk_community_messages").classList.add("d-none")
+    next()
+  },
+
+  beforeRouteLeave(to, from, next) {
+    document.getElementById("vk_community_messages").classList.remove("d-none")
     next()
   },
 
@@ -56,5 +62,6 @@ export default {
 
 .controls {
   display: flex;
+  margin-bottom: 18px;
 }
 </style>

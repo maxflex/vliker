@@ -4,18 +4,31 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Task\{Task, CompletedTask};
 use App\Http\Requests\Task\{
     StoreRequest,
     NextRequest
 };
 use App\Http\Resources\TaskResource;
+use App\Models\{Action, Task};
 use App\Utils\Url;
 
 class TasksController extends Controller
 {
+    /**
+     * Мои задачи
+     */
     public function index(Request $request)
     {
+        // Отметить уведомления прочитанными
+        auth()->user()->update([
+            'last_seen_action_id' => Action::query()
+                ->whereHas(
+                    'taskTo',
+                    fn ($query) => $query->where('user_id', auth()->id())
+                )
+                ->max('id')
+        ]);
+
         return TaskResource::collection(
             auth()->user()->tasks
         );
@@ -45,55 +58,50 @@ class TasksController extends Controller
         );
     }
 
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    public function destroy($id)
-    {
-        //
-    }
-
     /**
      * Получить следующую задачу для пользователя
-     * И засчитать лайк предыдущей задачи, если передан target_task_id
+     * И засчитать лайк предыдущей задачи, если передан task_id_to
+     *
+     * Задачи с минимум 1 лайком участвуют в подборе
      */
     public function next(NextRequest $request)
     {
         // На эту задачу мы в данный момент накручиваем
-        $myTask = Task::find($request->completed_by_task_id);
+        $myTask = Task::find($request->task_id_from);
 
-        if (isset($request->target_task_id)) {
-            $myTask->completed()->create([
-                'target_task_id' => $request->target_task_id
+        if (isset($request->task_id_to)) {
+            $myTask->actionsFrom()->create([
+                'task_id_to' => $request->task_id_to
             ]);
         }
 
-        $nextTask = Task::query()
-            ->where('type', $myTask->type)
-            ->excludeReported()
-            ->excludeBanned()
-            ->excludeLiked(auth()->user())
-            ->excludeOwn(auth()->user())
+        $tasksQuery = Task::query()
+            ->notBanned()
+            ->excludeUser(auth()->user())
+            ->excludeLikedByUser(auth()->user())
+            ->where('type', $myTask->type);
+
+        $nextTask = Action::query()
+            ->joinSub($tasksQuery, 'tasks', 'tasks.id', '=', 'actions.task_id_from')
             ->orderByActiveFirst()
-            ->firstOrFail();
+            ->first()
+            ->taskFrom;
 
         return new TaskResource($nextTask);
     }
 
     /**
      * Проверить какая задача в очереди
-     * (сколько задач передо мной, у которых received=0)
+     * (сколько задач передо мной, которым еще не накрутили ни одного лайка)
      */
     public function checkQueue(Task $task)
     {
         return Task::query()
+            ->notBanned()
             ->where('type', $task->type)
             ->where('id', '<', $task->id)
-            ->whereRaw("
-                (select count(*) from completed_tasks where target_task_id = tasks.id) = 0
-            ")
+            ->where('is_active', true)
+            ->whereDoesntHave('actionsTo')
             ->count();
     }
 }

@@ -25,8 +25,6 @@ export default {
     this.$store.dispatch("task/get").then(r => {
       this.tasks = r.data
     })
-
-    this.$http.get("notifications/see")
   },
 
   computed: {

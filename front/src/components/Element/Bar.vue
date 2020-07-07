@@ -46,8 +46,8 @@ export default {
 
   data() {
     return {
-      url: "https://vk.com/photo343244650_394923801",
-      // url: "",
+      // url: "https://vk.com/photo343244650_394923801",
+      url: "",
     }
   },
 

@@ -1,6 +1,8 @@
+import { isArray } from "lodash"
+
 export default {
-  SET(store, text) {
-    store.text = text
+  SHOW(store, text) {
+    store.text = isArray(text) ? text.join("<br />") : text
     store.isActive = true
-  }
+  },
 }

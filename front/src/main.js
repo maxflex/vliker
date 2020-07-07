@@ -12,6 +12,8 @@ import Cookies from "js-cookie"
 require("@/plugins/directives")
 require("@/scss/style.scss")
 
+Vue.use(VuePageTransition)
+
 // Require @/components/UI globally
 // https://vuejs.org/v2/guide/components-registration.html#Automatic-Global-Registration-of-Base-Components
 const requireComponent = require.context(
@@ -51,8 +53,14 @@ http.interceptors.request.use(
 )
 
 Vue.config.productionTip = false
+
 Vue.prototype.$http = http
-Vue.use(VuePageTransition)
+Vue.prototype.$showMessage = function(text) {
+  this.$store.commit("message/SHOW", text)
+}
+Vue.prototype.$user = function() {
+  return this.$store.state.auth.user
+}
 
 new Vue({
   render: h => h(App),

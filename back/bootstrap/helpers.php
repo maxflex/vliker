@@ -17,3 +17,8 @@ function extract_fields($object, array $fields, array $additional = [])
 
     return array_merge($result, $additional);
 }
+
+function json_redecode($object)
+{
+    return json_decode(json_encode($object));
+}

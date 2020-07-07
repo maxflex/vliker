@@ -13,20 +13,23 @@ export default {
   },
 
   stop({ commit, state, dispatch }) {
-    dispatch(
-      "message/set",
-      `
-      Вы накрутили 
-      <span class='text_red'>${state.currentTask.completed}</span> 
+    commit(
+      "message/SHOW",
+      `<span class='text_medium'>Вы накрутили
+      <span class='text_red'>
+        ${state.currentTask.actions_from_count}
+      </span>
       ${TASK_TYPE_META[state.currentTask.type].label}
-    `,
+      </span>
+      <hr />
+      Убедитесь, что страница открыта`,
       { root: true },
     )
 
     commit("SET", null)
 
     // заново получаем пользователя, чтобы появилось
-    // has_tasks=true и notification_count
+    // has_tasks=true и notifications_count
     dispatch("auth/login", null, { root: true })
 
     router.push({ name: "StatsPage" })

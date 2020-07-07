@@ -151,7 +151,7 @@ h1 {
 }
 
 .grey-link {
-  color: #939393;
+  color: $grey-light;
   text-decoration: none;
   cursor: pointer !important;
   &:hover {
@@ -204,4 +204,21 @@ a {
 .vertical-fix {
   top: -1px;
   position: relative;
+}
+.vertical-fix-down {
+  top: 1px;
+  position: relative;
+}
+
+.d-none {
+  display: none;
+}
+
+#vk_community_messages {
+  z-index: 1 !important;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid rgba($grey-light, 0.2);
 }

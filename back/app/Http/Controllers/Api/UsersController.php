@@ -31,7 +31,7 @@ class UsersController extends Controller
         // или чтоб нельзя было залогиниться просто подменой куки?
         $user = User::create([
             // 'login' => 'guest-' . (User::max('id') + 1),
-            'password' => Hash::make(uniqid()),
+            // 'password' => Hash::make(uniqid()),
         ]);
 
         return new UserResource($user);

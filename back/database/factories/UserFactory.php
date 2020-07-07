@@ -2,7 +2,6 @@
 
 use App\Models\User;
 use Faker\Generator as Faker;
-use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +15,5 @@ use Illuminate\Support\Facades\Hash;
 */
 
 $factory->define(User::class, function (Faker $faker) {
-    return [
-        'login' => 'factory-' . uniqid(),
-        'password' => Hash::make(uniqid()),
-    ];
+    return [];
 });

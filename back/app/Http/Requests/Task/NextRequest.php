@@ -4,7 +4,7 @@ namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
-use App\Models\Task\Task;
+use App\Models\Task;
 
 class NextRequest extends FormRequest
 {
@@ -17,11 +17,11 @@ class NextRequest extends FormRequest
     public function rules()
     {
         return [
-            'completed_by_task_id' => [
+            'task_id_from' => [
                 'required',
                 'exists:tasks,id',
                 // накручивать можно только на свои задачи
-                function($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) {
                     $task = Task::find($value);
                     if ($task->user_id !== auth()->id()) {
                         $fail(__('validation.task.is-not-mine'));
@@ -29,10 +29,10 @@ class NextRequest extends FormRequest
                 },
             ],
 
-            'target_task_id' => [
+            'task_id_to' => [
                 'nullable',
                 'exists:tasks,id',
-                'different:completed_by_task_id',
+                'different:task_id_from',
                 // нельзя лайкать свои задачи
                 function ($attribute, $value, $fail) {
                     $task = Task::find($value);

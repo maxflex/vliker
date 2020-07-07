@@ -7,17 +7,14 @@ Route::namespace('Api')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::prefix('tasks')->group(function () {
-            Route::post('next', 'TasksController@next');
-            Route::get('check-queue/{task}', 'TasksController@checkQueue');
+            Route::post('next', 'TasksController@next')->name('tasks.next');
+            Route::get('check-queue/{task}', 'TasksController@checkQueue')->name('tasks.check-queue');
         });
 
-        Route::apiResource('tasks', 'TasksController');
+        Route::apiResources([
+            'tasks' => 'TasksController'
+        ]);
 
-        Route::prefix('notifications')->group(function () {
-            Route::get('/', 'NotificationsController@index');
-            Route::get('/see', 'NotificationsController@see');
-        });
-
-        Route::post('reports', 'ReportsController@store');
+        Route::apiResource('reports', 'ReportsController')->only(['store']);
     });
 });

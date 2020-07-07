@@ -15,11 +15,12 @@ class CreateTasksTable extends Migration
     public function up()
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('url');
             $table->enum('type', TaskType::getValues())->index();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained();
+            $table->boolean('is_banned')->default(false)->index();
+            $table->boolean('is_active')->default(false)->index();
             $table->timestamps();
         });
     }

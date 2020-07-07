@@ -2,7 +2,7 @@
   <div>
     <div class="progress">
       <div
-        v-if="currentTask.completed === 0"
+        v-if="currentTask.actions_from_count === 0"
         class="text-center"
         style="align-self: flex-end"
       >
@@ -16,9 +16,9 @@
           {{ TASK_TYPE_META[currentTask.type].icon }}
         </i>
         <span class="progress__label__counter text_red mr-2">
-          <v-number :value="currentTask.completed"></v-number>
+          <v-number :value="currentTask.actions_from_count"></v-number>
         </span>
-        <span class="progress__label__text">накручено</span>
+        <span class="progress__label__text vertical-fix">накручено</span>
       </div>
     </div>
     <TaskItem />
@@ -49,11 +49,15 @@ export default {
 <style lang="scss">
 .progress {
   &__label {
-    font-size: 18px;
+    font-size: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100px;
+
+    & i {
+      font-size: 28px;
+    }
 
     &__counter {
       display: inherit;

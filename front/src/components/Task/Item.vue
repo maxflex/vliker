@@ -11,13 +11,16 @@
         />
       </div>
     </div>
-    <div class="report" v-if="targetTaskId !== null">
-      <div style="padding-top: 6px" v-if="reported" class="text_green">
-        Спасибо! Cтраница будет удалена
+    <div class="report" v-if="taskIdTo !== null">
+      <div v-if="reported" class="flex-items justify-center text_green">
+        <i class="material-icons mr-2 vertical-fix" style="font-size: 20px">
+          error
+        </i>
+        спасибо – мы удалим страницу
       </div>
       <a v-else class="grey-link flex-items justify-center" @click="report">
         <i class="material-icons mr-2 vertical-fix" style="font-size: 20px">
-          flag
+          error_outline
         </i>
         страница была недоступна
       </a>
@@ -49,7 +52,8 @@ export default {
       TASK_TYPE_META,
       loading: true,
       item: null,
-      targetTaskId: null, // ID только что выполненного задания
+      // ID только что выполненного задания
+      taskIdTo: null,
       reported: null,
       noMoreTasks: false,
       instructions: {},
@@ -78,7 +82,7 @@ export default {
   methods: {
     onWindowFocus() {
       if (this.likeAnimationQueued) {
-        this.currentTask.completed++
+        this.currentTask.actions_from_count++
         this.likeAnimationQueued = false
       }
     },
@@ -108,14 +112,14 @@ export default {
       this.loading = true
       this.noMoreTasks = false
       if (this.item !== null) {
-        this.targetTaskId = this.item.id
+        this.taskIdTo = this.item.id
         this.likeAnimationQueued = true
-        // this.currentTask.completed++
+        // this.currentTask.actions_from_count++
       }
       this.$http
         .post([API_URL, "next"].join("/"), {
-          target_task_id: this.targetTaskId,
-          completed_by_task_id: this.currentTask.id,
+          task_id_to: this.taskIdTo,
+          task_id_from: this.currentTask.id,
         })
         .then(r => {
           this.reported = false
@@ -131,7 +135,7 @@ export default {
     },
 
     noMoreTasksMessage() {
-      this.$store.dispatch("message/set", [
+      this.$showMessage([
         "Страницы для обмена закончились",
         "Вернитесь чуть позже",
       ])
@@ -140,7 +144,7 @@ export default {
     report() {
       this.reported = true
       this.$http.post("reports", {
-        reported_task_id: this.targetTaskId,
+        task_id: this.taskIdTo,
       })
     },
   },
@@ -187,6 +191,6 @@ export default {
 .report {
   text-align: center;
   font-size: 12px;
-  margin-top: 18px;
+  margin-top: 38px;
 }
 </style>
