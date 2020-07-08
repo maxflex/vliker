@@ -18,7 +18,11 @@
         </i>
         спасибо – мы её удалим
       </div>
-      <a v-else class="grey-link flex-items justify-center" @click="report">
+      <a
+        v-else
+        class="pointer text_grey flex-items justify-center"
+        @click="report()"
+      >
         <i class="material-icons mr-2" style="font-size: 20px">
           outlined_flag
         </i>
