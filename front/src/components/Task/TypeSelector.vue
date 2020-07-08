@@ -48,6 +48,8 @@ export default {
   justify-content: space-between;
   flex-wrap: wrap;
   padding: 5px;
+  font-size: 14px;
+
   &__item {
     text-align: center;
     // border: 3px solid $grey;
@@ -85,6 +87,7 @@ export default {
       ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
       & .task-types__title {
         color: white;
+        font-weight: bold;
       }
       & .task-types__img svg {
         opacity: 1 !important;

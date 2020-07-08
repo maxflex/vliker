@@ -13,13 +13,13 @@
     </div>
     <div class="report" v-if="taskIdTo !== null">
       <div v-if="reported" class="flex-items justify-center text_green">
-        <i class="material-icons mr-2 vertical-fix" style="font-size: 20px">
+        <i class="material-icons mr-2" style="font-size: 20px">
           error
         </i>
         спасибо – мы удалим страницу
       </div>
       <a v-else class="grey-link flex-items justify-center" @click="report">
-        <i class="material-icons mr-2 vertical-fix" style="font-size: 20px">
+        <i class="material-icons mr-2" style="font-size: 20px">
           error_outline
         </i>
         страница была недоступна
@@ -190,7 +190,7 @@ export default {
 
 .report {
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 38px;
 }
 </style>

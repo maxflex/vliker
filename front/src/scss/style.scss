@@ -5,12 +5,12 @@
 @import "_typography";
 @import "_spacing";
 @import "_animations";
-@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
+@import "https://use.typekit.net/qjw3liy.css";
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
 body,
 html {
-  font-family: "Roboto", sans-serif;
+  font-family: proxima-soft, sans-serif !important;
   height: 100%;
   min-width: 320px;
   overflow-x: hidden;

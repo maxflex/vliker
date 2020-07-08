@@ -15,12 +15,12 @@ export default {
   stop({ commit, state, dispatch }) {
     commit(
       "message/SHOW",
-      `<span class='text_medium'>Вы накрутили
+      `<b>Вы накрутили
       <span class='text_red'>
         ${state.currentTask.actions_from_count}
       </span>
       ${TASK_TYPE_META[state.currentTask.type].label}
-      </span>
+      </b>
       <hr />
       Убедитесь, что страница открыта`,
       { root: true },
