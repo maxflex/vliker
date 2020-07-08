@@ -11,6 +11,7 @@
 body,
 html {
   font-family: proxima-soft, sans-serif !important;
+  font-size: 1.1em;
   height: 100%;
   min-width: 320px;
   overflow-x: hidden;
@@ -99,6 +100,24 @@ button {
   }
 }
 
+.pt {
+  &-1 {
+    padding-top: $spacing-1;
+  }
+  &-2 {
+    padding-top: $spacing-2;
+  }
+  &-3 {
+    padding-top: $spacing-3;
+  }
+  &-4 {
+    padding-top: $spacing-4;
+  }
+  &-5 {
+    padding-top: $spacing-5;
+  }
+}
+
 .invisible {
   visibility: hidden;
 }
@@ -168,7 +187,7 @@ h1 {
   position: relative;
   &:before {
     content: "";
-    $size: 9px;
+    $size: 12px;
     height: $size;
     width: $size;
     border-radius: 50%;
@@ -221,4 +240,13 @@ a {
 hr {
   border: none;
   border-bottom: 1px solid rgba($grey-light, 0.2);
+}
+input[type="text"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  &::placeholder {
+    line-height: normal !important;
+    vertical-align: middle;
+  }
 }

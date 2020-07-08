@@ -190,7 +190,7 @@ export default {
 
 .report {
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
   margin-top: 38px;
 }
 </style>

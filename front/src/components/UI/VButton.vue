@@ -20,6 +20,7 @@ export default {
 @import "@/scss/_variables";
 
 .v-button {
+  font-size: 16px;
   box-sizing: border-box;
   padding: 10px 25px;
   border-radius: 4px;

@@ -84,9 +84,9 @@ export default {
   &__logo {
     text-align: center;
     & img {
-      width: 50%;
+      width: 60%;
       max-width: 500px;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
   }
 }

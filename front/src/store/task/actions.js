@@ -12,7 +12,7 @@ export default {
     })
   },
 
-  stop({ commit, state, dispatch }) {
+  stop({ commit, state }) {
     commit(
       "message/SHOW",
       `<b>Вы накрутили
@@ -27,11 +27,7 @@ export default {
     )
 
     commit("SET", null)
-
-    // заново получаем пользователя, чтобы появилось
-    // has_tasks=true и notifications_count
-    dispatch("auth/login", null, { root: true })
-
+    commit("auth/SET_HAS_TASKS", true, { root: true })
     router.push({ name: "StatsPage" })
   },
 

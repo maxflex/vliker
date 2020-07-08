@@ -85,6 +85,7 @@ export default {
 
 .bar {
   width: 100%;
+  font-size: 14px;
   &__controls {
     display: flex;
     &__input {

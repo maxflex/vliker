@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pt-4">
     <div v-if="tasks !== null">
       <Item class="mb-5" v-for="task in tasks" :item="task" :key="task.id" />
     </div>
@@ -13,6 +13,11 @@ import { mapState } from "vuex"
 
 export default {
   components: { Item },
+
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit("auth/SET_NOTIFICATIONS_COUNT", 0)
+    next()
+  },
 
   data() {
     return {
