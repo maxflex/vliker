@@ -7,7 +7,10 @@
     <div class="controls">
       <v-button class="flex-items" @click.native="stop()">
         <i class="material-icons mr-2">stop</i>
-        <span>завершить накрутку</span>
+        <span class="vertical-fix">завершить накрутку</span>
+        <!-- <i class="material-icons ml-2">
+          keyboard_arrow_right
+        </i> -->
       </v-button>
     </div>
   </div>
@@ -62,6 +65,8 @@ export default {
 
 .controls {
   display: flex;
+  justify-content: space-evenly;
+  width: 100%;
   margin-bottom: 18px;
 }
 </style>

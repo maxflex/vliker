@@ -1,6 +1,8 @@
 <template>
   <div class="v-chip" :class="color" @click="$emit('click')">
-    <slot></slot>
+    <div class="v-chip__content">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -25,5 +27,9 @@ export default {
   letter-spacing: 1px;
   cursor: pointer;
   position: relative;
+  &__content {
+    top: -1px;
+    position: relative;
+  }
 }
 </style>

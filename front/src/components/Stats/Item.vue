@@ -119,7 +119,7 @@ export default {
   }
 
   &__progress {
-    height: 34px;
+    height: 36px;
     width: 100%;
     border-radius: 8px;
     background: #f7f7f7;
@@ -152,7 +152,7 @@ export default {
           width: 100%;
           background-repeat: repeat;
           background-size: 175px;
-          opacity: 0.25;
+          opacity: 0.4;
         }
       }
     }

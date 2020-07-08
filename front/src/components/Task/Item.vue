@@ -14,13 +14,13 @@
     <div class="report" v-if="taskIdTo !== null">
       <div v-if="reported" class="flex-items justify-center text_green">
         <i class="material-icons mr-2" style="font-size: 20px">
-          error
+          flag
         </i>
-        спасибо – мы удалим страницу
+        спасибо – мы её удалим
       </div>
       <a v-else class="grey-link flex-items justify-center" @click="report">
         <i class="material-icons mr-2" style="font-size: 20px">
-          error_outline
+          outlined_flag
         </i>
         страница была недоступна
       </a>
