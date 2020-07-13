@@ -25,8 +25,6 @@ class Task extends Model
         'is_banned'
     ];
 
-    protected $dateFormat = 'Y-m-d';
-
     /**
      * Поставлено задачей (я поставил)
      */
