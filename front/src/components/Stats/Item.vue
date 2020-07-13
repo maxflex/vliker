@@ -15,10 +15,12 @@
         <v-chip @click="checkQueue()" color="grey" v-else-if="isInQueue">
           в очереди
         </v-chip>
-        <span class="text_grey-light" v-else-if="isInProgress">
+        <span class="text_grey-light small" v-else-if="isInProgress">
           {{ item.actions_to_count }} накручено
         </span>
-        <v-chip v-else color="green">выполнено</v-chip>
+        <v-chip v-else color="green" @click="openTaskUrl(item)">
+          выполнено
+        </v-chip>
       </span>
       <spacer></spacer>
       <v-menu>
@@ -42,6 +44,12 @@
         :style="{ width: percentage + '%' }"
       ></div>
     </div>
+    <span
+      class="text_grey-light xs ml-2"
+      v-if="item.latest_action_created_at !== null"
+    >
+      {{ item.latest_action_created_at | timeAgo }}
+    </span>
   </div>
 </template>
 

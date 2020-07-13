@@ -26,4 +26,14 @@ trait TaskScopes
             )
         );
     }
+
+    public function scopeOrderByLatestAction($query)
+    {
+        $query
+            ->selectRaw("
+                tasks.*,
+                (select max(created_at) from actions where actions.task_id_from = tasks.id) as latest_action_created_at
+            ")
+            ->orderBy("latest_action_created_at", "desc");
+    }
 }

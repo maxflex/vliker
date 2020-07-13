@@ -9,7 +9,7 @@ use App\Http\Requests\Task\{
     StoreRequest,
     NextRequest
 };
-use App\Http\Resources\TaskResource;
+use App\Http\Resources\{TaskResource, StatsTaskResource};
 use App\Models\{Action, Task};
 use App\Utils\Url;
 use Illuminate\Support\Facades\DB;
@@ -31,8 +31,8 @@ class TasksController extends Controller
                 ->max('id')
         ]);
 
-        return TaskResource::collection(
-            auth()->user()->tasks()->latest()->get()
+        return StatsTaskResource::collection(
+            auth()->user()->tasks()->orderByLatestAction()->get()
         );
     }
 
