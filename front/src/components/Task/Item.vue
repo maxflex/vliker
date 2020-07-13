@@ -130,9 +130,19 @@ export default {
           this.item = r.data
         })
         .catch(e => {
-          if (e.response.status === 404) {
-            this.noMoreTasks = true
-            this.noMoreTasksMessage()
+          switch (e.response.status) {
+            case 404: {
+              this.noMoreTasks = true
+              this.noMoreTasksMessage()
+              break
+            }
+            case 429: {
+              this.$showMessage([
+                "Накрутка не засчитана",
+                "Обратитесь в поддержку",
+              ])
+              this.$store.dispatch("task/stop", false)
+            }
           }
         })
         .then(() => (this.loading = false))

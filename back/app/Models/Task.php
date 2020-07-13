@@ -2,22 +2,30 @@
 
 namespace App\Models;
 
+use App\Enums\BanReason;
 use App\Scopes\TaskScopes;
 use App\Utils\Url;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Task extends Model
 {
     use TaskScopes;
 
     protected $fillable = [
-        'task_id_from', 'task_id_to', 'type', 'is_active', 'is_banned', 'url'
+        'task_id_from', 'task_id_to', 'type', 'is_active', 'url'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'is_banned' => 'boolean',
     ];
+
+    protected $appends = [
+        'is_banned'
+    ];
+
+    protected $dateFormat = 'Y-m-d';
 
     /**
      * Поставлено задачей (я поставил)
@@ -49,8 +57,30 @@ class Task extends Model
         return $this->actionsFrom->count() > $this->actionsTo->count();
     }
 
+    public function ban(string $banReason)
+    {
+        if (BanReason::hasValue($banReason)) {
+            if ($banReason === BanReason::Cheat) {
+                // Archive all actions
+                DB::table("_actions")->insert(
+                    $this->actionsFrom()->get()->map(fn ($item) => $item->toArray())->all()
+                );
+                // Remove all actions
+                $this->actionsFrom()->delete();
+            }
+            $this->ban_reason = $banReason;
+            return $this->save();
+        }
+        throw new Exception("Wrong ban reason");
+    }
+
     public function getUrlAttribute($value)
     {
         return Url::vk($value);
+    }
+
+    public function getIsBannedAttribute()
+    {
+        return $this->ban_reason !== null;
     }
 }

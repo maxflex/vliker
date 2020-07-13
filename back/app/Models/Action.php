@@ -20,4 +20,9 @@ class Action extends Model
     {
         return $this->belongsTo(Task::class, 'task_id_to');
     }
+
+    protected function serializeDate($date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

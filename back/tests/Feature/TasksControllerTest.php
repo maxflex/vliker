@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\{User, Task};
+use App\Models\{Action, User, Task};
+use Illuminate\Support\Facades\DB;
 
 class TasksControllerTest extends FeatureTestCase
 {
@@ -57,9 +58,11 @@ class TasksControllerTest extends FeatureTestCase
             'task_id_to' => $otherUserTask3->id,
         ]);
 
-        $response->assertJson([
-            'id' => $otherUserTask4->id
-        ]);
+        $response
+            ->assertOk()
+            ->assertJson([
+                'id' => $otherUserTask4->id
+            ]);
 
         $response = $this->post(route('tasks.next'), [
             'task_id_from' => $this->myTask->id,
@@ -69,5 +72,52 @@ class TasksControllerTest extends FeatureTestCase
         $response->assertJson([
             'id' => $otherUserTask2->id
         ]);
+    }
+
+    public function testCheckQueue()
+    {
+        $otherUserTask = $this->createOtherUserTask();
+        $otherUserTask2 = $this->createOtherUserTask();
+        $myTask2 = $this->me->tasks()->save(
+            factory(Task::class)->make()
+        );
+
+        $otherUserTask->actionsFrom()->create([
+            'task_id_to' => $this->myTask->id
+        ]);
+
+        $this->checkQueue($myTask2->id, 1);
+
+        $otherUserTask2->actionsFrom()->create([
+            'task_id_to' => $this->myTask->id,
+        ]);
+
+        $otherUserTask2->actionsFrom()->create([
+            'task_id_to' => $myTask2->id,
+        ]);
+
+        $this->checkQueue($myTask2->id, 2);
+
+        $otherUserTask->actionsFrom()->create([
+            'task_id_to' => $otherUserTask2->id,
+        ]);
+
+        $this->checkQueue($myTask2->id, 1);
+
+        $otherUserTask2->actionsFrom()->create([
+            'task_id_to' => $otherUserTask->id,
+        ]);
+
+        $this->checkQueue($myTask2->id, 0);
+    }
+
+
+    private function checkQueue($taskId, $assertSee)
+    {
+        return $this
+            ->get(route('tasks.check-queue', [
+                'task' => $taskId
+            ]))
+            ->assertSee($assertSee);
     }
 }

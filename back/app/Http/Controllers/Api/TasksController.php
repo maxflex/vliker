@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\BanReason;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\{
@@ -11,6 +12,7 @@ use App\Http\Requests\Task\{
 use App\Http\Resources\TaskResource;
 use App\Models\{Action, Task};
 use App\Utils\Url;
+use Illuminate\Support\Facades\DB;
 
 class TasksController extends Controller
 {
@@ -87,7 +89,34 @@ class TasksController extends Controller
             ->first()
             ->taskFrom;
 
+        if ($this->cheatControl($myTask)) {
+            return response(null, 429);
+        }
+
         return new TaskResource($nextTask);
+    }
+
+
+    /**
+     * Если лайкает быстрее чем раз в 2 секунды – бан
+     */
+    private function cheatControl(Task $task): bool
+    {
+        if (app()->environment('testing')) {
+            return false;
+        }
+
+        $key = cache_key(BanReason::Cheat, auth()->id());
+        $seconds = 2;
+
+        cache()->put($key, cache()->increment($key), $seconds);
+
+        if (cache($key) > 3) {
+            $task->ban(BanReason::Cheat);
+            return true;
+        }
+
+        return false;
     }
 
     /**

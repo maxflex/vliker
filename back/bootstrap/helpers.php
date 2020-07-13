@@ -22,3 +22,8 @@ function json_redecode($object)
 {
     return json_decode(json_encode($object));
 }
+
+function cache_key(...$args)
+{
+    return  implode(':', array_merge([strtolower(config('app.name'))], $args));
+}

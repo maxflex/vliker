@@ -8,7 +8,7 @@ trait TaskScopes
 {
     public function scopeNotBanned($query)
     {
-        return $query->where('is_banned', false);
+        return $query->whereNull('ban_reason');
     }
 
     public function scopeExcludeUser($query, User $user)

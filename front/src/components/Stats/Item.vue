@@ -46,7 +46,11 @@
 </template>
 
 <script>
-import { TASK_TYPE_META, openTaskUrl } from "@/components/Task"
+import {
+  TASK_TYPE_META,
+  BAN_REASON_MESSAGE,
+  openTaskUrl,
+} from "@/components/Task"
 import VMenu from "@/components/UI/VMenu"
 
 export default {
@@ -76,17 +80,13 @@ export default {
 
     checkQueue() {
       this.$store.dispatch("task/checkQueue", this.item).then(r => {
-        this.$showMessage(
-          `Вы <span class="text_red">${r.data}й</span> в очереди`,
-        )
+        const queue = parseInt(r.data) > 1 ? `${r.data}й` : "следующий"
+        this.$showMessage(`Вы <span class="text_red">${queue}</span> в очереди`)
       })
     },
 
     showBanInfo() {
-      this.$showMessage([
-        "Страница заблокирована из-за жалоб",
-        "Она точно доступна и открыта для всех?",
-      ])
+      this.$showMessage(BAN_REASON_MESSAGE[this.item.ban_reason])
     },
   },
 

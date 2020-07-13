@@ -12,10 +12,11 @@ export default {
     })
   },
 
-  stop({ commit, state }) {
-    commit(
-      "message/SHOW",
-      `<b>Вы накрутили
+  stop({ commit, state }, showMessage = true) {
+    if (showMessage) {
+      commit(
+        "message/SHOW",
+        `<b>Вы накрутили
       <span class='text_red'>
         ${state.currentTask.actions_from_count}
       </span>
@@ -23,8 +24,9 @@ export default {
       </b>
       <hr />
       Убедитесь, что страница открыта`,
-      { root: true },
-    )
+        { root: true },
+      )
+    }
 
     commit("SET", null)
     commit("auth/SET_HAS_TASKS", true, { root: true })

@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Enums\BanReason;
 use App\Models\Report;
 
 class ReportObserver
@@ -10,9 +11,7 @@ class ReportObserver
     {
         // Бан задачи при превышении лимита по репортам
         if ($report->task->reports()->count() >= Report::LIMIT) {
-            $report->task->update([
-                'is_banned' => true
-            ]);
+            $report->task->ban(BanReason::Report);
         }
     }
 }
