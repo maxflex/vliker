@@ -32,7 +32,7 @@ class TasksController extends Controller
         ]);
 
         return TaskResource::collection(
-            auth()->user()->tasks
+            auth()->user()->tasks()->latest()->get()
         );
     }
 
