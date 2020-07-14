@@ -47,30 +47,31 @@ class EnumsToJs extends Command
                 continue;
             }
             $classname = 'App\\Enums\\' . pathinfo($enum, PATHINFO_FILENAME);
-
             $class = new $classname($classname::getValues()[0]);
-            if (!($class instanceof LocalizedEnum)) {
-                continue;
-            };
             $classBaseName = Str::upper(Str::snake(class_basename($classname)));
             $toArray = [];
             foreach ($classname::toArray() as $key => $value) {
                 $toArray[Str::camel($key)] = $value;
             }
-
             $toArray = json_encode($toArray, $flags);
-            $toSelectArray = json_encode($classname::toSelectArray(), $flags);
-            $content = <<<JS
-            export const {$classBaseName} = {$toArray}
 
-            export const {$classBaseName}_TITLE = {$toSelectArray}
+            if ($class instanceof LocalizedEnum) {
+                $toSelectArray = json_encode($classname::toSelectArray(), $flags);
+                $content = <<<JS
+                export const {$classBaseName} = {$toArray}
 
-            export default {
-                title: {$classBaseName}_TITLE,
-                option: {$classBaseName},
-                values: Object.values({$classBaseName}),
+                export const {$classBaseName}_TITLE = {$toSelectArray}
+
+                export default {
+                    title: {$classBaseName}_TITLE,
+                    option: {$classBaseName},
+                    values: Object.values({$classBaseName}),
+                }
+                JS;
+            } else {
+                $content = "export const {$classBaseName} = {$toArray}";
             }
-            JS;
+
             file_put_contents($folder . Str::snake(class_basename($classname), '-') . '.js', $content);
             echo $classname . PHP_EOL;
         }

@@ -1,8 +1,7 @@
 <?php
 
 use App\Enums\{
-    BanReason,
-    TaskType,
+    TaskType
 };
 
 return [
@@ -10,9 +9,5 @@ return [
         TaskType::Like => 'Лайки',
         TaskType::Subscribe => 'Подписчики',
         TaskType::Comment => 'Комментарии',
-    ],
-    BanReason::class => [
-        BanReason::Report => '',
-        BanReason::Cheat => '',
     ],
 ];
