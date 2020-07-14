@@ -191,14 +191,14 @@ h1 {
   position: relative;
   &:before {
     content: "";
-    $size: 12px;
+    $size: 10px;
     height: $size;
     width: $size;
     border-radius: 50%;
     background: $red;
     position: absolute;
     right: 0;
-    animation-name: heartBeat;
+    animation-name: heartBeatBig;
     animation-duration: 1s;
     animation-iteration-count: infinite;
   }
