@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TaskType;
 use App\Models\{Action, User, Task};
+use App\Utils\Url;
 use Illuminate\Support\Facades\DB;
 
 class TasksControllerTest extends FeatureTestCase
@@ -111,6 +113,22 @@ class TasksControllerTest extends FeatureTestCase
         $this->checkQueue($myTask2->id, 0);
     }
 
+    public function testStore()
+    {
+        $params = [
+            'url' => 'https://vk.com/club19711522',
+            'type' => TaskType::Subscribe,
+        ];
+
+        $response = $this->post(route('tasks.store'), $params);
+
+        $response
+            ->assertOk()
+            ->assertJson([
+                'url' => $params['url'],
+                'type' => $params['type'],
+            ]);
+    }
 
     private function checkQueue($taskId, $assertSee)
     {

@@ -8,8 +8,4 @@ use Illuminate\Support\Facades\DB;
 
 class TaskObserver
 {
-    public function creating($task)
-    {
-        $task->url = Url::shorten($task->url);
-    }
 }

@@ -23,7 +23,10 @@ export default {
       ${TASK_TYPE_META[state.currentTask.type].label}
       </b>
       <hr />
-      Убедитесь, что страница открыта`,
+      <span class='text_size-14 text_grey'>
+        Убедитесь, что ваша страница открыта
+      </span>
+      `,
         { root: true },
       )
     }

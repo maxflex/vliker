@@ -27,13 +27,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Task::observe(TaskObserver::class);
+        // Task::observe(TaskObserver::class);
         Action::observe(ActionObserver::class);
         User::observe(UserObserver::class);
         Report::observe(ReportObserver::class);
         JsonResource::withoutWrapping();
-        // Carbon::serializeUsing(function ($carbon) {
-        //     return $carbon->format('Y-m-d H:i:s');
-        // });
+        Carbon::serializeUsing(function ($carbon) {
+            return $carbon->format('Y-m-d H:i:s');
+        });
     }
 }

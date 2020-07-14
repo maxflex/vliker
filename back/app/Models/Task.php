@@ -77,6 +77,11 @@ class Task extends Model
         return Url::vk($value);
     }
 
+    public function setUrlAttribute($value)
+    {
+        $this->attributes['url'] = Url::shorten($value);
+    }
+
     public function getIsBannedAttribute()
     {
         return $this->ban_reason !== null;
