@@ -19,7 +19,7 @@ export const TASK_TYPE_META = {
   [TASK_TYPE.like]: {
     icon: "favorite",
     label: "лайков", // вы накрутили 13 лайков
-    instruction: [
+    instructions: [
       "Сейчас откроется страница,",
       "там надо будет поставить лайк",
     ],
@@ -27,7 +27,7 @@ export const TASK_TYPE_META = {
   [TASK_TYPE.subscribe]: {
     icon: "person",
     label: "подписчиков",
-    instruction: [
+    instructions: [
       "Сейчас откроется страница,",
       "на неё нужно будет подписаться",
     ],
@@ -35,7 +35,7 @@ export const TASK_TYPE_META = {
   [TASK_TYPE.comment]: {
     icon: "chat",
     label: "комментариев",
-    instruction: [
+    instructions: [
       "Сейчас откроется страница, оставьте",
       "там какой-нибудь приятный комментарий",
     ],

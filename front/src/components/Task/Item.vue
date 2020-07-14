@@ -32,14 +32,18 @@
 
     <v-dialog
       @confirm="
-        firstTimeInstructionDialog = false
+        firstTimeInstructionsDialog = false
         like()
       "
-      v-model="firstTimeInstructionDialog"
+      v-model="firstTimeInstructionsDialog"
     >
-      <span
-        v-html="TASK_TYPE_META[currentTask.type].instruction.join('<br>')"
-      ></span>
+      <b
+        v-html="TASK_TYPE_META[currentTask.type].instructions.join('<br>')"
+      ></b>
+      <hr />
+      <span class="text_grey-light text_size-14">
+        Будь честным, иначе накрутка не засчитается
+      </span>
     </v-dialog>
   </div>
 </template>
@@ -61,7 +65,7 @@ export default {
       reported: null,
       noMoreTasks: false,
       instructions: {},
-      firstTimeInstructionDialog: false,
+      firstTimeInstructionsDialog: false,
 
       // лайк поставлен; при следующем возврате во вкладку
       // будет анимация +1 like
@@ -99,7 +103,7 @@ export default {
 
       // если накрутка впервые – показываем сообщение-инструкцию
       if (!(this.currentTask.type in this.instructions)) {
-        this.firstTimeInstructionDialog = true
+        this.firstTimeInstructionsDialog = true
         this.instructions[this.currentTask.type] = 1
         localStorage.setItem("instructions", JSON.stringify(this.instructions))
         return
