@@ -47,6 +47,16 @@ class Task extends Model
     }
 
     /**
+     * "Лайкнуть" задачу (засчитать действие)
+     */
+    public function like(Task $task)
+    {
+        return $this->actionsFrom()->create([
+            'task_id_to' => $task->id,
+        ]);
+    }
+
+    /**
      * Проверить, является ли задача активной
      * Когда поставленных задачей лайков больше, чем накрученных ей
      */
@@ -61,10 +71,10 @@ class Task extends Model
             if ($banReason === BanReason::Cheat) {
                 // Archive all actions
                 DB::table("_actions")->insert(
-                    $this->actionsFrom()->get()->map(fn ($item) => $item->toArray())->all()
+                    $this->actionsFrom->map(fn ($action) => $action->toArray())->all()
                 );
                 // Remove all actions
-                $this->actionsFrom()->delete();
+                $this->actionsFrom->each(fn ($action) => $action->delete());
             }
             $this->ban_reason = $banReason;
             return $this->save();

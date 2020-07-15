@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TaskType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\{User, Task};
@@ -22,13 +23,17 @@ class FeatureTestCase extends TestCase
         $this->actingAs($this->me, 'api');
     }
 
-    protected function createOtherUserTask(User $user = null)
-    {
+    protected function createOtherUserTask(
+        User $user = null,
+        string $taskType = TaskType::Like
+    ) {
         if ($user === null) {
             $user = $this->otherUser;
         }
         return $user->tasks()->save(
-            factory(Task::class)->make()
+            factory(Task::class)->make([
+                'type' => $taskType,
+            ])
         );
     }
 }

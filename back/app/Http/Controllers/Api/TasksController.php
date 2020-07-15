@@ -71,10 +71,9 @@ class TasksController extends Controller
         // На эту задачу мы в данный момент накручиваем
         $myTask = Task::find($request->task_id_from);
 
+        // Если передан task_id_to – лайкаем задачу
         if (isset($request->task_id_to)) {
-            $myTask->actionsFrom()->create([
-                'task_id_to' => $request->task_id_to
-            ]);
+            $myTask->like(Task::find($request->task_id_to));
         }
 
         $tasksQuery = Task::query()
@@ -98,21 +97,24 @@ class TasksController extends Controller
 
 
     /**
-     * Если лайкает быстрее чем раз в 2 секунды – бан
+     * Бан за быстрые лайки
      */
     private function cheatControl(Task $task): bool
     {
-        if (app()->environment('testing')) {
+        if (app()->environment('testing') && config('cheat-control-test') !== true) {
             return false;
         }
 
         $key = cache_key(BanReason::Cheat, auth()->id());
-        $seconds = 2;
+        $seconds = config('ban.seconds.' . $task->type);
+        $limit = config('ban.limit');
 
         cache()->put($key, cache()->increment($key), $seconds);
 
-        if (cache($key) > 3) {
+        if (cache($key) >= $limit) {
             $task->ban(BanReason::Cheat);
+            // очистить кеш
+            cache()->pull($key);
             return true;
         }
 

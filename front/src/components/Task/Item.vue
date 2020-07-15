@@ -30,19 +30,13 @@
       </a>
     </div>
 
-    <v-dialog
-      @confirm="
-        firstTimeInstructionsDialog = false
-        like()
-      "
-      v-model="firstTimeInstructionsDialog"
-    >
+    <v-dialog @confirm="closeInstructionsDialog()" v-model="instructionsDialog">
       <b
         v-html="TASK_TYPE_META[currentTask.type].instructions.join('<br>')"
       ></b>
       <hr />
       <span class="text_grey-light text_size-14">
-        Будь честным, иначе накрутка не засчитается
+        Будь честным, иначе накрутка заблокируется
       </span>
     </v-dialog>
   </div>
@@ -64,9 +58,11 @@ export default {
       taskIdTo: null,
       reported: null,
       noMoreTasks: false,
-      instructions: {},
-      firstTimeInstructionsDialog: false,
-
+      // DEPRICATED: какие инструкции уже были показаны
+      // shownInstructions: {},
+      // Инструкция была показана
+      instructionSeen: false,
+      instructionsDialog: false,
       // лайк поставлен; при следующем возврате во вкладку
       // будет анимация +1 like
       likeAnimationQueued: false,
@@ -78,7 +74,8 @@ export default {
 
     // ознакомительные сообщения, если происходит накрутка в первый раз.
     // для каждого типа своё сообщение
-    this.instructions = JSON.parse(localStorage.getItem("instructions")) || {}
+    // this.shownInstructions =
+    //   JSON.parse(localStorage.getItem("shownInstructions")) || {}
 
     window.addEventListener("focus", this.onWindowFocus)
   },
@@ -101,11 +98,17 @@ export default {
         return
       }
 
-      // если накрутка впервые – показываем сообщение-инструкцию
-      if (!(this.currentTask.type in this.instructions)) {
-        this.firstTimeInstructionsDialog = true
-        this.instructions[this.currentTask.type] = 1
-        localStorage.setItem("instructions", JSON.stringify(this.instructions))
+      // если накрутка на этот тип задачи впервые – показываем инструкцию
+      // if (!(this.currentTask.type in this.shownInstructions)) {
+
+      // если первый лайк на задачу – показываем инструкцию
+      if (this.currentTask.actions_from_count === 0 && !this.instructionSeen) {
+        this.instructionsDialog = true
+        // this.shownInstructions[this.currentTask.type] = 1
+        // localStorage.setItem(
+        //   "shownInstructions",
+        //   JSON.stringify(this.shownInstructions),
+        // )
         return
       }
 
@@ -157,6 +160,12 @@ export default {
         "Страницы для обмена закончились",
         "Вернитесь чуть позже",
       ])
+    },
+
+    closeInstructionsDialog() {
+      this.instructionSeen = true
+      this.instructionsDialog = false
+      this.like()
     },
 
     report() {

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\BanReason;
 use App\Enums\TaskType;
 use App\Models\{Action, User, Task};
 use App\Utils\Url;
@@ -128,6 +129,45 @@ class TasksControllerTest extends FeatureTestCase
                 'url' => $params['url'],
                 'type' => $params['type'],
             ]);
+    }
+
+    /**
+     * Тест на бан задач из-за читов
+     * Тест выполняется долго из-за sleep, поэтому запускать отдельно
+     */
+    public function testCheatControl()
+    {
+        // Закомменить это, если понадобится запустить тест
+        $this->assertTrue(true);
+        return;
+
+        config(['cheat-control-test' => true]);
+
+        foreach (TaskType::getValues() as $taskType) {
+            $myTask = $this->createOtherUserTask($this->me, $taskType);
+            $otherUserTask = $this->createOtherUserTask(null, $taskType);
+            $otherUserTask->like($myTask);
+            $myTask->like($this->myTask);
+            $limit = config('ban.limit');
+            $seconds = config('ban.seconds.' . $taskType);
+
+            foreach (range(1, $limit) as $i) {
+                dump($taskType, $i);
+                $response = $this->post(route('tasks.next'), [
+                    'task_id_from' => $myTask->id,
+                ]);
+                sleep($seconds);
+                if ($i === $limit) {
+                    $response->assertStatus(429);
+                    $this->assertEquals($myTask->fresh()->ban_reason, BanReason::Cheat);
+                    $this->assertCount(0, $myTask->fresh()->actionsFrom);
+                } else {
+                    $response->assertOk();
+                    $this->assertFalse($myTask->fresh()->is_banned);
+                    $this->assertCount(1, $myTask->fresh()->actionsFrom);
+                }
+            }
+        }
     }
 
     private function checkQueue($taskId, $assertSee)

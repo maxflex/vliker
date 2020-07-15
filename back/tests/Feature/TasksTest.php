@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\BanReason;
 use App\Models\{User, Task};
 
 class TasksTest extends FeatureTestCase
@@ -34,7 +35,7 @@ class TasksTest extends FeatureTestCase
             ->pluck('id')
             ->all();
 
-        $this->assertTrue($ids === [$otherUserTask2->id]);
+        $this->assertEquals($ids, [$otherUserTask2->id]);
     }
 
     /**
@@ -58,5 +59,23 @@ class TasksTest extends FeatureTestCase
         ]);
 
         $this->assertFalse($otherUserTask->fresh()->is_active);
+    }
+
+    /**
+     * Редкий случай, когда задача уже выполнена, потом блокируюется одна из задач,
+     * которая поставила мне лайк – в этом случае моя задача уже должна счтитаться невыполненной
+     */
+    public function testActivatesAfterCheatActionsRemoved()
+    {
+        $otherUserTask = $this->createOtherUserTask();
+        $this->myTask->like($otherUserTask);
+
+        $this->assertTrue($this->myTask->fresh()->is_active);
+
+        $otherUserTask->like($this->myTask);
+        $this->assertFalse($this->myTask->fresh()->is_active);
+
+        $otherUserTask->ban(BanReason::Cheat);
+        $this->assertTrue($this->myTask->fresh()->is_active);
     }
 }
