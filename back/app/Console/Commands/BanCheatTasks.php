@@ -39,22 +39,32 @@ class BanCheatTasks extends Command
      */
     public function handle()
     {
+        $limit = config('ban.limit');
         $bannedTaskIds = [];
-        $tasks = Task::where('is_active', true)->get();
+        $tasks = Task::query()
+            ->notBanned()
+            ->where('is_active', true)
+            ->get();
 
         $bar = $this->output->createProgressBar(count($tasks));
         foreach ($tasks as $task) {
             $previousAction = null;
+            $seconds = config('ban.seconds.' . $task->type);
             $warnings = 0;
+
             foreach ($task->actionsFrom as $action) {
                 if ($previousAction !== null) {
-                    // если между событиями менее 2 секунд
+                    // если между событиями менее N секунд
                     $secondsBetweenActions = $action->created_at->getTimestamp() - $previousAction->created_at->getTimestamp();
-                    if ($secondsBetweenActions <= 2) {
+                    if ($secondsBetweenActions <= $seconds) {
                         $warnings++;
+                    } else {
+                        // иначе обнуляем, т.к. считается только подряд
+                        // т.к. кеш очищается через $seconds
+                        $warnings = 0;
                     }
                 }
-                if ($warnings >= 3) {
+                if ($warnings >= $limit) {
                     $task->ban(BanReason::Cheat);
                     $bannedTaskIds[] = $task->id;
                     break;
@@ -66,6 +76,11 @@ class BanCheatTasks extends Command
         $bar->finish();
 
         $this->line("\n");
-        $this->info("Banned tasks: " . implode(", ", $bannedTaskIds));
+        if (count($bannedTaskIds) > 0) {
+            $this->info("Tasks banned: " . count($bannedTaskIds));
+            $this->line(implode(", ", $bannedTaskIds));
+        } else {
+            $this->info("No tasks banned");
+        }
     }
 }
