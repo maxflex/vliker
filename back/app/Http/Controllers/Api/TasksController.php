@@ -114,7 +114,7 @@ class TasksController extends Controller
         if (cache($key) >= $limit) {
             $task->ban(BanReason::Cheat);
             // очистить кеш
-            cache()->pull($key);
+            cache()->forget($key);
             return true;
         }
 

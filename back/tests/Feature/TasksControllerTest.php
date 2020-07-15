@@ -138,8 +138,8 @@ class TasksControllerTest extends FeatureTestCase
     public function testCheatControl()
     {
         // Закомменить это, если понадобится запустить тест
-        $this->assertTrue(true);
-        return;
+        // $this->assertTrue(true);
+        // return;
 
         config(['cheat-control-test' => true]);
 
