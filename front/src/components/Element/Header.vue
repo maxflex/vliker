@@ -22,7 +22,7 @@
       <router-link :to="{ name: 'StatsPage' }" v-if="user && user.has_tasks">
         <i
           :class="{
-            'has-new': user.notifications_count > 0,
+            'has-new': hasNewNotifications,
           }"
           class="material-icons pointer"
           >notifications</i
@@ -38,6 +38,13 @@ import { mapState } from "vuex"
 export default {
   computed: {
     ...mapState("auth", ["user"]),
+
+    hasNewNotifications() {
+      const newNotificationsCount = Object.values(
+        this.user.new_notifications,
+      ).reduce((a, b) => a + b, 0)
+      return newNotificationsCount > 0
+    },
   },
 }
 </script>

@@ -4,11 +4,13 @@
       <i class="material-icons text_red mr-2">
         {{ TASK_TYPE_META[item.type].icon }}
       </i>
-      <div>
+      <div class="flex-items">
         <span class="text_medium">{{ item.actions_from_count }}</span>
-        {{ TASK_TYPE_META[item.type].label }}
+        <span class="mx-2">
+          {{ TASK_TYPE_META[item.type].label }}
+        </span>
       </div>
-      <span class="ml-3">
+      <span class="ml-2">
         <v-chip color="red" v-if="item.is_banned" @click="showBanInfo()">
           бан
         </v-chip>
@@ -44,12 +46,19 @@
         :style="{ width: percentage + '%' }"
       ></div>
     </div>
-    <span
-      class="text_grey-light xs ml-2"
-      v-if="item.latest_action_created_at !== null"
-    >
-      {{ item.latest_action_created_at | timeAgo }}
-    </span>
+    <div class="stats__info">
+      <div class="text_grey-light xs stats__info__time-ago">
+        <template v-if="item.latest_action_created_at !== null">
+          {{ item.latest_action_created_at | timeAgo }}
+        </template>
+      </div>
+      <span
+        v-if="newNotificationsCount"
+        class="stats__info__new-notifications ml-1 text_green heartbeat-animation"
+      >
+        +{{ newNotificationsCount }} новых
+      </span>
+    </div>
   </div>
 </template>
 
@@ -113,6 +122,10 @@ export default {
     isInQueue() {
       return !this.item.is_banned && this.item.actions_to_count === 0
     },
+
+    newNotificationsCount() {
+      return this.$store.state.auth.user.new_notifications[this.item.id]
+    },
   },
 }
 </script>
@@ -121,9 +134,31 @@ export default {
 @import "@/scss/_variables";
 
 .stats {
+  &__item {
+    &:not(:last-of-type) {
+      margin-bottom: 40px;
+    }
+  }
+
   &__link {
     display: flex;
     align-items: center;
+  }
+
+  &__info {
+    margin: 6px 6px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &__time-ago {
+      opacity: 0.5;
+    }
+    &__new-notifications {
+      display: inline-block;
+      font-size: 13px;
+      top: -1px;
+      position: relative;
+    }
   }
 
   &__progress {
@@ -132,6 +167,7 @@ export default {
     border-radius: 8px;
     background: #f7f7f7;
     overflow: hidden;
+    position: relative;
 
     &__completed {
       height: 100%;

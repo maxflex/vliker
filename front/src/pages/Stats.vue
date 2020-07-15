@@ -1,7 +1,7 @@
 <template>
   <div class="pt-4">
     <div v-if="tasks !== null">
-      <Item class="mb-5" v-for="task in tasks" :item="task" :key="task.id" />
+      <Item v-for="task in tasks" :item="task" :key="task.id" />
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@ export default {
   components: { Item },
 
   beforeRouteLeave(to, from, next) {
-    this.$store.commit("auth/SET_NOTIFICATIONS_COUNT", 0)
+    this.$store.commit("auth/SET_NEW_NOTIFICATIONS", {})
     next()
   },
 

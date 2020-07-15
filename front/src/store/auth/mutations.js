@@ -5,7 +5,7 @@ export default {
   SET_HAS_TASKS(store, hasTasks) {
     store.user.has_tasks = hasTasks
   },
-  SET_NOTIFICATIONS_COUNT(store, notificationsCount) {
-    store.user.notifications_count = notificationsCount
+  SET_NEW_NOTIFICATIONS(store, newNotifications) {
+    store.user.new_notifications = newNotifications
   },
 }

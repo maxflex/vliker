@@ -22,16 +22,18 @@ class User extends Authenticatable
 
     /**
      * Кол-во новых уведомлений
-     * notifications_count = кол-во actions c момента сохраненного last_seen_action_id
+     * new_notifications = кол-во actions c момента сохраненного last_seen_action_id
      */
-    public function getNotificationsCountAttribute()
+    public function getNewNotificationsAttribute()
     {
         return Action::query()
+            ->selectRaw('task_id_to, count(*) as total')
             ->whereHas(
                 'taskTo',
                 fn ($query) => $query->where('user_id', $this->id)
             )
             ->where('id', '>', (int) $this->last_seen_action_id)
-            ->count();
+            ->groupBy('task_id_to')
+            ->pluck('total', 'task_id_to');
     }
 }

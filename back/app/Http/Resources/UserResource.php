@@ -9,7 +9,7 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         return extract_fields($this, [
-            'id', 'notifications_count', 'api_token'
+            'id', 'new_notifications', 'api_token'
         ], [
             'has_tasks' => $this->tasks()->exists(),
         ]);

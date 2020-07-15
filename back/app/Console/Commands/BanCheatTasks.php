@@ -42,8 +42,9 @@ class BanCheatTasks extends Command
         $limit = config('ban.limit');
         $bannedTaskIds = [];
         $tasks = Task::query()
-            ->notBanned()
-            ->where('is_active', true)
+            ->where('ban_reason', '<>', BanReason::Cheat)
+            // ->notBanned()
+            // ->where('is_active', true)
             ->get();
 
         $bar = $this->output->createProgressBar(count($tasks));

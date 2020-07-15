@@ -35,7 +35,7 @@
         v-html="TASK_TYPE_META[currentTask.type].instructions.join('<br>')"
       ></b>
       <hr />
-      <span class="text_grey-light text_size-14">
+      <span class="text_grey text_size-14">
         Будь честным, иначе накрутка заблокируется
       </span>
     </v-dialog>
@@ -61,7 +61,7 @@ export default {
       // DEPRICATED: какие инструкции уже были показаны
       // shownInstructions: {},
       // Инструкция была показана
-      instructionSeen: false,
+      instructionsSeen: false,
       instructionsDialog: false,
       // лайк поставлен; при следующем возврате во вкладку
       // будет анимация +1 like
@@ -102,7 +102,7 @@ export default {
       // if (!(this.currentTask.type in this.shownInstructions)) {
 
       // если первый лайк на задачу – показываем инструкцию
-      if (this.currentTask.actions_from_count === 0 && !this.instructionSeen) {
+      if (this.currentTask.actions_from_count === 0 && !this.instructionsSeen) {
         this.instructionsDialog = true
         // this.shownInstructions[this.currentTask.type] = 1
         // localStorage.setItem(
@@ -163,7 +163,7 @@ export default {
     },
 
     closeInstructionsDialog() {
-      this.instructionSeen = true
+      this.instructionsSeen = true
       this.instructionsDialog = false
       this.like()
     },
