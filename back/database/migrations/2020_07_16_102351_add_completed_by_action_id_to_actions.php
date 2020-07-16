@@ -23,6 +23,8 @@ class AddCompletedByActionIdToActions extends Migration
                 ->onDelete('set null')
                 ->comment('Action ID that completed the task');
         });
+        Schema::dropIfExists("_actions");
+        DB::statement("CREATE TABLE _actions LIKE actions");
     }
 
     /**

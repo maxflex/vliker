@@ -73,9 +73,10 @@ class TasksController extends Controller
 
         // Если передан action_id – лайкаем задачу
         if (isset($request->action_id)) {
-            // $myTask->likeTask(Task::find($request->task_id_to));
             $myTask->likeAction(Action::find($request->action_id));
         }
+
+
 
         $tasksQuery = Task::query()
             ->notBanned()

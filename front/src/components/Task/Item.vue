@@ -11,7 +11,7 @@
         />
       </div>
     </div>
-    <div class="report" v-if="taskIdTo !== null">
+    <div class="report" v-if="actionId !== null">
       <div v-if="reported" class="flex-items justify-center text_green">
         <i class="material-icons mr-2" style="font-size: 20px">
           flag
@@ -53,9 +53,9 @@ export default {
       capitalize,
       TASK_TYPE_META,
       loading: true,
-      item: null,
-      // ID только что выполненного задания
-      taskIdTo: null,
+      action: null,
+      // ID только что выполненного action
+      actionId: null,
       reported: null,
       noMoreTasks: false,
       // DEPRICATED: какие инструкции уже были показаны
@@ -114,7 +114,7 @@ export default {
 
       this.reported = false
 
-      openTaskUrl(this.item)
+      openTaskUrl(this.action)
 
       this.loadNext()
     },
@@ -122,19 +122,19 @@ export default {
     loadNext() {
       this.loading = true
       this.noMoreTasks = false
-      if (this.item !== null) {
-        this.taskIdTo = this.item.id
+      if (this.action !== null) {
+        this.actionId = this.action.id
         this.likeAnimationQueued = true
         // this.currentTask.actions_from_count++
       }
       this.$http
         .post([API_URL, "next"].join("/"), {
-          task_id_to: this.taskIdTo,
           task_id_from: this.currentTask.id,
+          action_id: this.actionId,
         })
         .then(r => {
           this.reported = false
-          this.item = r.data
+          this.action = r.data
         })
         .catch(e => {
           switch (e.response.status) {
@@ -171,7 +171,7 @@ export default {
     report() {
       this.reported = true
       this.$http.post("reports", {
-        task_id: this.taskIdTo,
+        task_id: this.actionId,
       })
     },
   },

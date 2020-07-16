@@ -56,9 +56,13 @@ class Task extends Model
     {
         $newAction = $this->likeTask($action->taskFrom);
 
-        $action->update([
-            'action_id' => $newAction->id
-        ]);
+        // устанавливаем единожды, храним оригинальный action_id
+        // не перезаписываем by ID сверхурочных лайков
+        if ($action->action_id === null) {
+            $action->update([
+                'action_id' => $newAction->id
+            ]);
+        }
     }
 
     /**

@@ -46,18 +46,72 @@ class TasksControllerTest extends FeatureTestCase
         $user4_task = $this->createTask($user4);
         $this->actingAs($user4, 'api');
 
-        // Теперь задачи все выполнены, должны получаться в порядке по убыванию ID
+        // dd(DB::table('actions')->get()->all());
+        // dd(Action::orderByActiveFirst()->get()->map(fn ($i) => $i->toArray())->all());
+
+        // Теперь должны идти 2 выше лайкнутые actions с ID 3, 4 по порядку
         $this
             ->nextRequest($user4_task->id)
             ->assertJson([
-                'id' => $action2->id,
+                'id' => 3,
             ]);
 
+        // ВНИМАНИЕ: тут должна вернуться action_id=2, а не 4
+        // Потому что мы лайкаем action_id=3, потом срабатывает excludeLikedByUser
+        // и исключается action_id=4, потому что это одна и та же задача
         $this
-            ->nextRequest($user4_task->id, $action2->id)
+            ->nextRequest($user4_task->id, 3)
             ->assertJson([
-                'id' => $action1->id,
+                'id' => 2
             ]);
+
+        // Дальше должен появиться старый пользователь,
+        // создать action и его action должен быть честно в конце
+        $user2_task->likeTask($user3_task);
+
+        // Создаем нового пользователя и лайкаем все в соответствии с:
+        // dd(DB::table('actions')->get()->all())
+        $user5 = $this->createUser();
+        $user5_task = $this->createTask($user5);
+        $this->actingAs($user5, 'api');
+
+        $this->nextRequest($user5_task->id)->assertJson([
+            'id' => 4,
+        ]);
+        $this->nextRequest($user5_task->id, 4)->assertJson([
+            'id' => 5,
+        ]);
+        $this->nextRequest($user5_task->id, 5)->assertJson([
+            'id' => 6,
+        ]);
+        $this->nextRequest($user5_task->id, 6)->assertJson([
+            'id' => 2,
+        ]);
+        $this->nextRequest($user5_task->id, 2)->assertNotFound();
+
+        // Пробуем забанить задачу и убеждаемся,
+        // что снятый лайк будет в приоритете
+        // (все лайки забаненной задачи снимаются)
+        // По идее, след невыполненный action_id=7,
+        // но после бана след невыполненный должен быть action_id=1, action_id=2
+        $this->myTask->ban(BanReason::Cheat);
+
+        $user6 = $this->createUser();
+        $user6_task = $this->createTask($user6);
+        // dd($user6_task->toArray());
+        $this->actingAs($user6, 'api');
+
+        $this->nextRequest($user6_task->id)->assertJson([
+            'id' => 1
+        ]);
+        $this->nextRequest($user6_task->id, 1)->assertJson([
+            'id' => 2
+        ]);
+        $this->nextRequest($user6_task->id, 2)->assertJson([
+            'id' => 7
+        ]);
+
+        // dd(DB::table('actions')->get()->all());
     }
 
     public function testCheckQueue()

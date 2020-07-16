@@ -16,6 +16,7 @@ trait ActionScopes
     public function scopeOrderByActiveFirst($query)
     {
         return $query->orderByRaw("
+            ISNULL(actions.action_id) DESC,
             CASE WHEN actions.action_id IS NULL THEN actions.id END ASC,
             CASE WHEN actions.action_id IS NOT NULL THEN actions.id END DESC
         ");

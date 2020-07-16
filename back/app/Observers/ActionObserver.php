@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Action;
 use App\Models\Task;
 
 class ActionObserver
@@ -13,5 +14,16 @@ class ActionObserver
         // может, страница теперь открыта и доступна
         // if ($action->taskFrom->is_banned) {
         // }
+    }
+
+    /**
+     * При бане удаляются все actions
+     * Значит, если от удаленного action были какие-то дейсвия – аннулируем их
+     */
+    public function deleted($action)
+    {
+        Action::where('action_id', $action->id)->update([
+            'action_id' => null
+        ]);
     }
 }
