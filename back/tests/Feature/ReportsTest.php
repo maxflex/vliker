@@ -20,8 +20,8 @@ class ReportsTest extends FeatureTestCase
     public function testTaskBannedAfterReports()
     {
         foreach (range(1, Report::LIMIT) as $i) {
-            $otherUser = factory(User::class)->create();
-            $otherUser->reports()->create([
+            $user2 = factory(User::class)->create();
+            $user2->reports()->create([
                 'task_id' => $this->myTask->id
             ]);
             $this->assertTrue($this->myTask->reports()->count() === $i);

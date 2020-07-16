@@ -9,7 +9,7 @@ use App\Http\Requests\Task\{
     StoreRequest,
     NextRequest
 };
-use App\Http\Resources\{TaskResource, StatsTaskResource};
+use App\Http\Resources\{ActionResource, TaskResource, StatsTaskResource};
 use App\Models\{Action, Task};
 use App\Utils\Url;
 use Illuminate\Support\Facades\DB;
@@ -71,9 +71,10 @@ class TasksController extends Controller
         // На эту задачу мы в данный момент накручиваем
         $myTask = Task::find($request->task_id_from);
 
-        // Если передан task_id_to – лайкаем задачу
-        if (isset($request->task_id_to)) {
-            $myTask->like(Task::find($request->task_id_to));
+        // Если передан action_id – лайкаем задачу
+        if (isset($request->action_id)) {
+            // $myTask->likeTask(Task::find($request->task_id_to));
+            $myTask->likeAction(Action::find($request->action_id));
         }
 
         $tasksQuery = Task::query()
@@ -82,17 +83,17 @@ class TasksController extends Controller
             ->excludeLikedByUser(auth()->user())
             ->where('type', $myTask->type);
 
-        $nextTask = Action::query()
+        $nextAction = Action::query()
+            ->select('actions.*')
             ->joinSub($tasksQuery, 'tasks', 'tasks.id', '=', 'actions.task_id_from')
             ->orderByActiveFirst()
-            ->first()
-            ->taskFrom;
+            ->firstOrFail();
 
         if ($this->cheatControl($myTask)) {
             return response(null, 429);
         }
 
-        return new TaskResource($nextTask);
+        return new ActionResource($nextAction);
     }
 
 
@@ -123,16 +124,20 @@ class TasksController extends Controller
 
     /**
      * Проверить какая задача в очереди
-     * (сколько задач передо мной, которым еще не накрутили ни одного лайка)
+     * (сколько невыполненных действий передо мной)
+     * (точнее, перед первым моим действием)
      */
     public function checkQueue(Task $task)
     {
-        return Task::query()
-            ->notBanned()
-            ->where('type', $task->type)
-            ->where('id', '<', $task->id)
-            ->where('is_active', true)
-            ->whereDoesntHave('actionsTo')
+        return Action::query()
+            ->whereHas(
+                'taskFrom',
+                fn ($query) => $query
+                    ->where('type', $task->type)
+                    ->whereNull('ban_reason')
+            )
+            ->where('id', '<', $task->actionsFrom()->value('id'))
+            ->active()
             ->count();
     }
 }

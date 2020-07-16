@@ -15,25 +15,22 @@ class FeatureTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->me = factory(User::class)->create();
-        $this->myTask = $this->me->tasks()->save(
-            factory(Task::class)->make()
-        );
-        $this->otherUser = factory(User::class)->create();
+        $this->me = $this->createUser();
+        $this->myTask = $this->createTask($this->me);
         $this->actingAs($this->me, 'api');
     }
 
-    protected function createOtherUserTask(
-        User $user = null,
-        string $taskType = TaskType::Like
-    ) {
-        if ($user === null) {
-            $user = $this->otherUser;
-        }
+    protected function createTask(User $user, string $taskType = TaskType::Like)
+    {
         return $user->tasks()->save(
             factory(Task::class)->make([
                 'type' => $taskType,
             ])
         );
+    }
+
+    protected function createUser()
+    {
+        return factory(User::class)->create();
     }
 }

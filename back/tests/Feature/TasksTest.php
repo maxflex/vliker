@@ -9,9 +9,11 @@ class TasksTest extends FeatureTestCase
 {
     public function testExcludeLikedByUserScope()
     {
+        $user2 = $this->createUser();
+
         // Создаем 2 задачи
-        $otherUserTask1 = $this->createOtherUserTask();
-        $otherUserTask2 = $this->createOtherUserTask();
+        $user2_task1 = $this->createTask($user2);
+        $user2_task2 = $this->createTask($user2);
 
         // До лайка должны получить все 2 задачи
         $ids1 = Task::query()
@@ -19,14 +21,12 @@ class TasksTest extends FeatureTestCase
             ->pluck('id')
             ->all();
 
-        $ids2 = $this->otherUser->tasks()->pluck('id')->all();
+        $ids2 = $user2->tasks()->pluck('id')->all();
 
         $this->assertTrue($ids1 === $ids2);
 
         // лайкаем одну из задач
-        $this->myTask->actionsFrom()->create([
-            'task_id_to' => $otherUserTask1->id,
-        ]);
+        $this->myTask->likeTask($user2_task1);
 
         // теперь должна вернуться 1 нелайкнутая
         $ids = Task::query()
@@ -35,47 +35,6 @@ class TasksTest extends FeatureTestCase
             ->pluck('id')
             ->all();
 
-        $this->assertEquals($ids, [$otherUserTask2->id]);
-    }
-
-    /**
-     * Задача должна становится активной, если кол-во накрученных > кол-во поставленных
-     * и наоборот, деактивироваться, если кол-во поставленных становится > кол-во накрученных
-     */
-    public function testActivatesAndDeactivates()
-    {
-        $otherUserTask = $this->createOtherUserTask();
-
-        $this->assertFalse($otherUserTask->fresh()->is_active);
-
-        $otherUserTask->actionsFrom()->create([
-            'task_id_to' => $this->myTask->id
-        ]);
-
-        $this->assertTrue($otherUserTask->fresh()->is_active);
-
-        $this->myTask->actionsFrom()->create([
-            'task_id_to' => $otherUserTask->id
-        ]);
-
-        $this->assertFalse($otherUserTask->fresh()->is_active);
-    }
-
-    /**
-     * Редкий случай, когда задача уже выполнена, потом блокируюется одна из задач,
-     * которая поставила мне лайк – в этом случае моя задача уже должна счтитаться невыполненной
-     */
-    public function testActivatesAfterCheatActionsRemoved()
-    {
-        $otherUserTask = $this->createOtherUserTask();
-        $this->myTask->like($otherUserTask);
-
-        $this->assertTrue($this->myTask->fresh()->is_active);
-
-        $otherUserTask->like($this->myTask);
-        $this->assertFalse($this->myTask->fresh()->is_active);
-
-        $otherUserTask->ban(BanReason::Cheat);
-        $this->assertTrue($this->myTask->fresh()->is_active);
+        $this->assertEquals($ids, [$user2_task2->id]);
     }
 }

@@ -9,7 +9,9 @@ class Action extends Model
 {
     use ActionScopes;
 
-    protected $fillable = ['task_id_from', 'task_id_to'];
+    protected $fillable = [
+        'task_id_from', 'task_id_to', 'action_id'
+    ];
 
     public function taskFrom()
     {

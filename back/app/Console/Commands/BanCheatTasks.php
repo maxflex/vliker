@@ -13,7 +13,7 @@ class BanCheatTasks extends Command
      *
      * @var string
      */
-    protected $signature = 'tasks:ban-cheat';
+    protected $signature = 'custom:ban-cheat-tasks';
 
     /**
      * The console command description.
@@ -43,8 +43,6 @@ class BanCheatTasks extends Command
         $bannedTaskIds = [];
         $tasks = Task::query()
             ->where('ban_reason', '<>', BanReason::Cheat)
-            // ->notBanned()
-            // ->where('is_active', true)
             ->get();
 
         $bar = $this->output->createProgressBar(count($tasks));

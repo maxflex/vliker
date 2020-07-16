@@ -29,17 +29,16 @@ class NextRequest extends FormRequest
                 },
             ],
 
-            'task_id_to' => [
+            'action_id' => [
                 'nullable',
-                'exists:tasks,id',
-                'different:task_id_from',
+                'exists:actions,id',
                 // нельзя лайкать свои задачи
-                function ($attribute, $value, $fail) {
-                    $task = Task::find($value);
-                    if ($task->user_id === auth()->id()) {
-                        $fail(__('validation.task.target-is-mine'));
-                    }
-                }
+                // function ($attribute, $value, $fail) {
+                //     $task = Task::find($value);
+                //     if ($task->user_id === auth()->id()) {
+                //         $fail(__('validation.task.target-is-mine'));
+                //     }
+                // }
             ],
         ];
     }

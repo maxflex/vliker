@@ -14,11 +14,7 @@ class Task extends Model
     use TaskScopes;
 
     protected $fillable = [
-        'task_id_from', 'task_id_to', 'type', 'is_active', 'url'
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
+        'task_id_from', 'task_id_to', 'type', 'url'
     ];
 
     protected $appends = [
@@ -49,10 +45,19 @@ class Task extends Model
     /**
      * "Лайкнуть" задачу (засчитать действие)
      */
-    public function like(Task $task)
+    public function likeTask(Task $task): Action
     {
         return $this->actionsFrom()->create([
             'task_id_to' => $task->id,
+        ]);
+    }
+
+    public function likeAction(Action $action)
+    {
+        $newAction = $this->likeTask($action->taskFrom);
+
+        $action->update([
+            'action_id' => $newAction->id
         ]);
     }
 

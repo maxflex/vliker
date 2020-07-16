@@ -12,104 +12,75 @@ class TasksControllerTest extends FeatureTestCase
 {
     public function testNext()
     {
-        // Создаем 4 задачи $otherUserTask1 – $otherUserTask4
-        // и накручиваем им по одному лайку, чтобы участвовали в подборе
-        foreach (range(1, 4) as $i) {
-            $varName = 'otherUserTask' . $i;
-            $$varName = $this->createOtherUserTask();
-            $$varName->actionsFrom()->create([
-                'task_id_to' => $this->myTask->id
-            ]);
-        }
+        $user2 = $this->createUser();
+        $user2_task = $this->createTask($user2);
+        $action1 = $user2_task->likeTask($this->myTask);
 
-        // Делаем 2 из них завершенными
-        // (кол-во полученных лайков >= кол-во накрученных)
-        $otherUserTask2->actionsTo()->create([
-            'task_id_from' => $otherUserTask1->id
-        ]);
-        $otherUserTask4->actionsTo()->create([
-            'task_id_from' => $otherUserTask1->id
-        ]);
+        $user3 = $this->createUser();
+        $user3_task = $this->createTask($user3);
+        $action2 = $user3_task->likeTask($this->myTask);
 
-        // Теперь мы делаем запросы на /next
-        // Сначала должны получить активные задачи, а потом завершенные
-        // Порядок активных должен быть: по возрастанию
-        // Порядок завершенных должен быть: по убыванию
-        // $otherUserTask2, $otherUserTask4 – завершенные
-        // $otherUserTask1, $otherUserTask3 – активные
-        // т.е. порядок должен быть: 1, 3, 4, 2
-        $response = $this->post(route('tasks.next'), [
-            'task_id_from' => $this->myTask->id,
-        ]);
-
-        $response->assertJson([
-            'id' => $otherUserTask1->id
-        ]);
-
-        // Лайкаем задачу & получаем следующую
-        $response = $this->post(route('tasks.next'), [
-            'task_id_from' => $this->myTask->id,
-            'task_id_to' => $otherUserTask1->id,
-        ]);
-
-        $response->assertJson([
-            'id' => $otherUserTask3->id
-        ]);
-
-        $response = $this->post(route('tasks.next'), [
-            'task_id_from' => $this->myTask->id,
-            'task_id_to' => $otherUserTask3->id,
-        ]);
-
-        $response
-            ->assertOk()
+        // Среди 2х действий оба сейчас невыполнены
+        // Невыполненные должны идтии по порядку
+        $this
+            ->nextRequest($this->myTask->id)
             ->assertJson([
-                'id' => $otherUserTask4->id
+                'id' => $action1->id,
             ]);
 
-        $response = $this->post(route('tasks.next'), [
-            'task_id_from' => $this->myTask->id,
-            'task_id_to' => $otherUserTask4->id,
-        ]);
+        // Лайкаем 1е действие, должно теперь вернуться второе
+        $this
+            ->nextRequest($this->myTask->id, $action1->id)
+            ->assertJson([
+                'id' => $action2->id,
+            ]);
 
-        $response->assertJson([
-            'id' => $otherUserTask2->id
-        ]);
+        // Лайкаем второе действие – нелайкнутых действий больше нет
+        $this
+            ->nextRequest($this->myTask->id, $action2->id)
+            ->assertNotFound();
+
+
+        // Переключаемся на нового пользователя
+        $user4 = $this->createUser();
+        $user4_task = $this->createTask($user4);
+        $this->actingAs($user4, 'api');
+
+        // Теперь задачи все выполнены, должны получаться в порядке по убыванию ID
+        $this
+            ->nextRequest($user4_task->id)
+            ->assertJson([
+                'id' => $action2->id,
+            ]);
+
+        $this
+            ->nextRequest($user4_task->id, $action2->id)
+            ->assertJson([
+                'id' => $action1->id,
+            ]);
     }
 
     public function testCheckQueue()
     {
-        $otherUserTask = $this->createOtherUserTask();
-        $otherUserTask2 = $this->createOtherUserTask();
-        $myTask2 = $this->me->tasks()->save(
-            factory(Task::class)->make()
-        );
+        $user2 = $this->createUser();
+        $user2_task1 = $this->createTask($user2);
+        $user2_task2 = $this->createTask($user2);
+        $myTask2 = $this->createTask($this->me);
 
-        $otherUserTask->actionsFrom()->create([
-            'task_id_to' => $this->myTask->id
-        ]);
+        $user2_task1->likeTask($this->myTask);
 
         $this->checkQueue($myTask2->id, 1);
 
-        $otherUserTask2->actionsFrom()->create([
-            'task_id_to' => $this->myTask->id,
-        ]);
-
-        $otherUserTask2->actionsFrom()->create([
-            'task_id_to' => $myTask2->id,
-        ]);
+        $user2_task2->likeTask($this->myTask);
+        $user2_task2->likeTask($myTask2);
 
         $this->checkQueue($myTask2->id, 2);
 
-        $otherUserTask->actionsFrom()->create([
-            'task_id_to' => $otherUserTask2->id,
-        ]);
+        $user2_task1->likeTask($user2_task2);
 
         $this->checkQueue($myTask2->id, 1);
 
-        $otherUserTask2->actionsFrom()->create([
-            'task_id_to' => $otherUserTask->id,
-        ]);
+        $user2_task2->likeTask($user2_task1);
 
         $this->checkQueue($myTask2->id, 0);
     }
@@ -138,16 +109,17 @@ class TasksControllerTest extends FeatureTestCase
     public function testCheatControl()
     {
         // Закомменить это, если понадобится запустить тест
-        // $this->assertTrue(true);
-        // return;
+        $this->assertTrue(true);
+        return;
 
         config(['cheat-control-test' => true]);
 
+        $user2 = $this->createUser();
         foreach (TaskType::getValues() as $taskType) {
-            $myTask = $this->createOtherUserTask($this->me, $taskType);
-            $otherUserTask = $this->createOtherUserTask(null, $taskType);
-            $otherUserTask->like($myTask);
-            $myTask->like($this->myTask);
+            $myTask = $this->createTask($this->me, $taskType);
+            $user2_task = $this->createTask($user2, $taskType);
+            $user2_task->likeTask($myTask);
+            $myTask->likeTask($this->myTask);
             $limit = config('ban.limit');
             $seconds = config('ban.seconds.' . $taskType);
 
@@ -177,5 +149,18 @@ class TasksControllerTest extends FeatureTestCase
                 'task' => $taskId
             ]))
             ->assertSee($assertSee);
+    }
+
+    private function nextRequest($taskIdFrom, $actionId = null)
+    {
+        $params = [
+            'task_id_from' => $taskIdFrom,
+        ];
+
+        if ($actionId !== null) {
+            $params['action_id'] = $actionId;
+        }
+
+        return $this->post(route('tasks.next'), $params);
     }
 }

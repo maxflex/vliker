@@ -16,9 +16,24 @@ trait ActionScopes
     public function scopeOrderByActiveFirst($query)
     {
         return $query->orderByRaw("
-            tasks.is_active DESC,
-            CASE WHEN tasks.is_active = 1 THEN actions.id END ASC,
-            CASE WHEN tasks.is_active = 0 THEN actions.id END DESC
+            CASE WHEN actions.action_id IS NULL THEN actions.id END ASC,
+            CASE WHEN actions.action_id IS NOT NULL THEN actions.id END DESC
         ");
+    }
+
+    /**
+     * Действие еще не лайкнули
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereNull('action_id');
+    }
+
+    /**
+     * Действие уже лайкнули
+     */
+    public function scopeFinished($query)
+    {
+        return $query->whereNotNull('action_id');
     }
 }
