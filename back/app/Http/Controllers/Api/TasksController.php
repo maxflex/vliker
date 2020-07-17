@@ -124,21 +124,30 @@ class TasksController extends Controller
     }
 
     /**
-     * Проверить какая задача в очереди
-     * (сколько невыполненных действий передо мной)
-     * (точнее, перед первым моим действием)
+     * Проверить место в очереди
+     *
+     * Сколько невыполненных действий между первым action_id моей задачи
+     * и первым выполненным action_id, который меньше action_id моей задачи
      */
     public function checkQueue(Task $task)
     {
-        return Action::query()
+        $query = Action::query()
             ->whereHas(
                 'taskFrom',
                 fn ($query) => $query
                     ->where('type', $task->type)
                     ->whereNull('ban_reason')
             )
-            ->where('id', '<', $task->actionsFrom()->value('id'))
-            ->active()
+            ->where('id', '<', $task->actionsFrom()->value('id'));
+
+        $latestLikedActionId = (clone $query)
+            ->finished()
+            ->latest()
+            ->first()
+            ->id;
+
+        return $query
+            ->where('id', '>', $latestLikedActionId)
             ->count();
     }
 }
