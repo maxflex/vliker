@@ -15,7 +15,10 @@ class ActionResource extends JsonResource
         return extract_fields($this, [
             'id'
         ], [
-            'url' => $this->taskFrom->url,
+            'task' => [
+                'id' => $this->taskFrom->id,
+                'url' => $this->taskFrom->url,
+            ],
         ]);
     }
 }

@@ -11,7 +11,7 @@
         />
       </div>
     </div>
-    <div class="report" v-if="actionId !== null">
+    <div class="report" v-if="previousAction !== null">
       <div v-if="reported" class="flex-items justify-center text_green">
         <i class="material-icons mr-2" style="font-size: 20px">
           flag
@@ -54,8 +54,8 @@ export default {
       TASK_TYPE_META,
       loading: true,
       action: null,
-      // ID только что выполненного action
-      actionId: null,
+      // Только что выполненный action
+      previousAction: null,
       reported: null,
       noMoreTasks: false,
       // DEPRICATED: какие инструкции уже были показаны
@@ -114,7 +114,7 @@ export default {
 
       this.reported = false
 
-      openTaskUrl(this.action)
+      openTaskUrl(this.action.task)
 
       this.loadNext()
     },
@@ -123,14 +123,15 @@ export default {
       this.loading = true
       this.noMoreTasks = false
       if (this.action !== null) {
-        this.actionId = this.action.id
+        this.previousAction = this.action
         this.likeAnimationQueued = true
         // this.currentTask.actions_from_count++
       }
       this.$http
         .post([API_URL, "next"].join("/"), {
           task_id_from: this.currentTask.id,
-          action_id: this.actionId,
+          action_id:
+            this.previousAction === null ? undefined : this.previousAction.id,
         })
         .then(r => {
           this.reported = false
@@ -171,7 +172,7 @@ export default {
     report() {
       this.reported = true
       this.$http.post("reports", {
-        task_id: this.actionId,
+        task_id: this.previousAction.task.id,
       })
     },
   },
