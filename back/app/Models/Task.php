@@ -79,11 +79,8 @@ class Task extends Model
         if (BanReason::hasValue($banReason)) {
             if ($banReason === BanReason::Cheat) {
                 // Archive all actions
-                DB::table("_actions")->insert(
-                    $this->actionsFrom->map(fn ($action) => $action->toArray())->all()
-                );
-                // Remove all actions
-                $this->actionsFrom->each(fn ($action) => $action->delete());
+                DB::table("_actions")->insert(json_redecode($this->actionsFrom, true));
+                $this->actionsFrom()->delete();
             }
             $this->ban_reason = $banReason;
             return $this->save();
