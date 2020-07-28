@@ -3,7 +3,8 @@
 namespace Tests\Feature;
 
 use App\Enums\BanReason;
-use App\Models\{User, Task};
+use App\Models\{Action, User, Task};
+use Illuminate\Support\Facades\DB;
 
 class TasksTest extends FeatureTestCase
 {
@@ -36,5 +37,31 @@ class TasksTest extends FeatureTestCase
             ->all();
 
         $this->assertEquals($ids, [$user2_task2->id]);
+    }
+
+    public function testCheckQueue()
+    {
+        $n = 15; // actions to seed
+        $user2 = $this->createUser();
+        $actions = [];
+        $tasks = [];
+
+        foreach (range(1, $n) as $i) {
+            $task = $this->createTask($user2);
+            $actions[] = $task->likeTask($this->myTask);
+            $tasks[] = $task;
+        }
+
+        $myTask2 = $this->createTask($this->me);
+        $myTask2->likeTask($this->myTask);
+        $this->assertEquals($myTask2->checkQueue(), $n);
+
+        // dd(DB::table('actions')->get()->all());
+        // поочередно лайкаем все actions перед $myTask2
+        // очередь должна уменьшаться на 1 каждый шаг
+        foreach (range(1, $n) as $i) {
+            $tasks[$i - 1]->likeAction($actions[$i - 1]);
+            $this->assertEquals($n - $i, $myTask2->checkQueue(true), "Step: {$i}");
+        }
     }
 }

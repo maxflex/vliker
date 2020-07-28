@@ -114,30 +114,30 @@ class TasksControllerTest extends FeatureTestCase
         // dd(DB::table('actions')->get()->all());
     }
 
-    public function testCheckQueue()
-    {
-        $user2 = $this->createUser();
-        $user2_task1 = $this->createTask($user2);
-        $user2_task2 = $this->createTask($user2);
-        $myTask2 = $this->createTask($this->me);
+    // public function testCheckQueue()
+    // {
+    //     $user2 = $this->createUser();
+    //     $user2_task1 = $this->createTask($user2);
+    //     $user2_task2 = $this->createTask($user2);
+    //     $myTask2 = $this->createTask($this->me);
 
-        $user2_task1->likeTask($this->myTask);
+    //     $user2_task1->likeTask($this->myTask);
 
-        $this->checkQueue($myTask2->id, 1);
+    //     $this->checkQueue($myTask2->id, 1);
 
-        $user2_task2->likeTask($this->myTask);
-        $user2_task2->likeTask($myTask2);
+    //     $user2_task2->likeTask($this->myTask);
+    //     $user2_task2->likeTask($myTask2);
 
-        $this->checkQueue($myTask2->id, 2);
+    //     $this->checkQueue($myTask2->id, 2);
 
-        $user2_task1->likeTask($user2_task2);
+    //     $user2_task1->likeTask($user2_task2);
 
-        $this->checkQueue($myTask2->id, 1);
+    //     $this->checkQueue($myTask2->id, 1);
 
-        $user2_task2->likeTask($user2_task1);
+    //     $user2_task2->likeTask($user2_task1);
 
-        $this->checkQueue($myTask2->id, 0);
-    }
+    //     $this->checkQueue($myTask2->id, 0);
+    // }
 
     public function testStore()
     {

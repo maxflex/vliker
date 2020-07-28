@@ -88,6 +88,36 @@ class Task extends Model
         throw new Exception("Wrong ban reason");
     }
 
+    /**
+     * Проверить место в очереди
+     *
+     * Сколько невыполненных действий между первым action_id моей задачи
+     * и первым выполненным action_id, который меньше action_id моей задачи
+     */
+    public function checkQueue()
+    {
+        $query = Action::query()
+            ->whereHas(
+                'taskFrom',
+                fn ($query) => $query
+                    ->where('type', $this->type)
+                    ->whereNull('ban_reason')
+            )
+            ->where('id', '<', $this->actionsFrom()->value('id'));
+
+        $latestLikedAction = (clone $query)
+            ->finished()
+            ->latest('id')
+            ->first();
+
+        return $query
+            ->when(
+                $latestLikedAction,
+                fn ($query) => $query->where('id', '>', $latestLikedAction->id)
+            )
+            ->count();
+    }
+
     public function getUrlAttribute($value)
     {
         return Url::vk($value);
